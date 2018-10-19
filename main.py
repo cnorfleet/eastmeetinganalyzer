@@ -2,6 +2,7 @@ from flask import Flask
 from flask import render_template
 import csv
 from flask import request
+from flask import jsonify
 import math
 
 from flask_bootstrap import Bootstrap
@@ -24,10 +25,23 @@ def load_data():
 
 @app.route('/')
 def main_page():
+	data = load_data()
+	numMeetings = (len(data[0])-1)/2
+	buttons = [[0, "All Meetings"]]
+	for i in range(numMeetings):
+		buttons += [[i+1, "Meeting "+str(i+1)]]
+	json = get_main_data(data, 0)
+	return render_template('main.html', data=json, buttons=buttons, numButtons=numMeetings+1)
+
+@app.route('/all')
+def reload_main_data():
 	meeting = 0
 	if ('meeting' in request.args):
 		meeting = int(request.args['meeting'])
 	data = load_data()
+	return jsonify(get_main_data(data, meeting))
+
+def get_main_data(data, meeting=0):
 	names = []
 	real = []
 	meme = []
@@ -41,16 +55,17 @@ def main_page():
 			real += [0]
 			for i in range(1, len(row)):
 				if i%2 == 0:
-					meme[-1] += int(row[i]) if row[i] != '' else 0
+					meme[-1] -= int(row[i]) if row[i] != '' else 0
 				else:
 					real[-1] += int(row[i]) if row[i] != '' else 0
 		else:
 			real += [int(row[meeting*2-1]) if row[meeting*2-1] != '' else 0]
-			meme += [int(row[meeting*2]) if row[meeting*2] != '' else 0]
-	buttons = [[0, "All Meetings"]]
-	for i in range(numMeetings):
-		buttons += [[i+1, "Meeting "+str(i+1)]]
-	return render_template('main.html', names=names, real=real, meme=meme, buttons=buttons, numButtons=numMeetings+1, meeting=meeting)
+			meme += [-1*int(row[meeting*2]) if row[meeting*2] != '' else 0]
+	json = {}
+	json['names'] = names
+	json['real'] = real
+	json['meme'] = meme
+	return json
 
 def binom(x, y, p):
 	score = math.factorial(x+y)/math.factorial(y)/math.factorial(x)

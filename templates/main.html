@@ -53,7 +53,7 @@
   <br><br>
   <div class="row" style="width: 70%">
     {% for item in buttons %}
-    <a href="/?meeting={{item[0]}}" class="btn btn-tab {% if (item[0] == meeting) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</a>
+    <div id="meeting-{{item[0]}}" onclick="loadData({{item[0]}})" class="btn btn-tab {% if (item[0] == 0) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</div>
     {% endfor %}
   </div>
 
@@ -63,22 +63,22 @@
 <script>
    // bar chart data
    var barData = {
-   labels : [{% for item in names %}
+   labels : [{% for item in data['names'] %}
                   "{{item}}",
               {% endfor %}],
    datasets : [
       {
         backgroundColor: "rgba(0,150,0,0.9)",
         label: "Real Comments",
-        data : [{% for item in real %}
+        data : [{% for item in data['real'] %}
                       {{item}},
                     {% endfor %}]
       },
       {
         backgroundColor: "rgba(150,0,0,0.9)",
         label: "Meme Comments",
-        data : [{% for item in meme %}
-                      -{{item}},
+        data : [{% for item in data['meme'] %}
+                      {{item}},
                     {% endfor %}]
       }
       ]
@@ -105,7 +105,24 @@ myBar = new Chart(ctx, {
         data: barData,
         options: options
       });
- 
+
+currentMeeting = 0
+
+function loadData(meeting){
+  $.get("/all?meeting="+meeting, function(data, status){
+      if (status == "success") {
+      console.log(data);
+      myBar.data.labels = data['names'];
+      myBar.data.datasets[0].data = data['real'];
+      myBar.data.datasets[1].data = data['meme'];
+      myBar.update();
+      $("#meeting-"+currentMeeting).removeClass("active");
+      currentMeeting = meeting;
+      $("#meeting-"+currentMeeting).addClass("active");
+    }
+  });
+}
+
 </script>
 
     <div class="copyright py-4 text-center white-text">

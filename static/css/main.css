@@ -19,7 +19,7 @@
   color: white;
 }
 
-a.active {
+div.active {
   background-color: #f44242;
   color: white;
 }
