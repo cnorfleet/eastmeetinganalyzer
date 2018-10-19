@@ -20,7 +20,7 @@
     <meta name="author" content="">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
 
-    <title>East Dorm Meeting Analysis Tool</title>
+    <title>East Dorm Meeting Analysis Tool - Leaderboard</title>
 
   </head>
 
@@ -35,11 +35,11 @@
       </div>
     </nav>
 
-<center>
+   <center>
     <div class="row tabs">
       <div style="width:70%"></div>
-      <a href="/" style="width:17.5%" class="btn btn-tab active">Home</a>
-      <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab">Leaderboards</a>
+      <a href="/" style="width:17.5%" class="btn btn-tab">Home</a>
+      <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab active">Leaderboards</a>
       <a href="" style="width:17.5%" class="btn btn-tab">Individual Stats</a>
       <a href="" style="width:17.5%" class="btn btn-tab">About</a>
 
@@ -52,61 +52,26 @@
 
   <br><br>
   <div class="row" style="width: 70%">
-    {% for item in buttons %}
-    <a href="/?meeting={{item[0]}}" class="btn btn-tab {% if (item[0] == meeting) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</a>
+    {% for item in methods %}
+    <a href="/leaderboard?method={{item[0]}}" class="btn btn-tab {% if (item[0] == method) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</a>
     {% endfor %}
   </div>
+  <h2>{{methods[method][1]}}</h2>
+      <h4>{{methods[method][2]}}</h4>
 
-  <canvas id="chart" width="2000" height="800"></canvas>
+
+<div class="row">
+<table class="table" style="width: 70%">
+  <tr><th>Rank</th><th>Name</th><th>Score</th><th>Real Comments</th><th>Meme Comments</th></tr>
+  {% for item in table %}
+  <tr><td>{{item[0]}}</td><td>{{item[1]}}</td><td>{{item[2]}}</td><td>{{item[3]}}</td><td>{{item[4]}}</td></tr>
+  {% endfor %}
+</table>
+</div>
+
   </center>
 
-<script>
-   // bar chart data
-   var barData = {
-   labels : [{% for item in names %}
-                  "{{item}}",
-              {% endfor %}],
-   datasets : [
-      {
-        backgroundColor: "rgba(0,150,0,0.9)",
-        label: "Real Comments",
-        data : [{% for item in real %}
-                      {{item}},
-                    {% endfor %}]
-      },
-      {
-        backgroundColor: "rgba(150,0,0,0.9)",
-        label: "Meme Comments",
-        data : [{% for item in meme %}
-                      -{{item}},
-                    {% endfor %}]
-      }
-      ]
-   }
- 
- var options = {
-          responsive: true,
-          scales: {
-            xAxes: [{
-              stacked: true,
-              ticks: {
-                autoSkip: false
-            }
-            }],
-            yAxes: [{
-              stacked: true
-            }]
-          }
-};
 
-var ctx = document.getElementById("chart").getContext("2d");
-myBar = new Chart(ctx, {
-        type: 'bar',
-        data: barData,
-        options: options
-      });
- 
-</script>
 
     <div class="copyright py-4 text-center white-text">
       <div class="container">
