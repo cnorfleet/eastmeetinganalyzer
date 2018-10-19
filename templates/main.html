@@ -1,0 +1,124 @@
+{# This simple template derives from ``base.html``. See ``base.html`` for
+   more information about template inheritance. #}
+{%- extends "base.html" %}
+
+{# Loads some of the macros included with Flask-Bootstrap. We are using the
+   utils module here to automatically render Flask's flashed messages in a
+   bootstrap friendly manner #}
+{% import "bootstrap/utils.html" as utils %}
+
+
+{# Inside the ``content`` is where you should place most of your own stuff.
+   This will keep scripts at the page end and a navbar you add on later
+   intact. #}
+{% block content %}
+  <head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
+
+    <title>East Dorm Meeting Analysis Tool</title>
+
+  </head>
+
+  <body id="page-top">
+
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg bg-secondary fixed-top text-uppercase" id="mainNav">
+      <div class="container">
+        <div class="row">
+          <div class="col-5 white-text"><h1>East Dorm Meeting System</h1></div>
+        </div>
+      </div>
+    </nav>
+
+    <div class="row tabs">
+      <div class="col-lg-2"></div>
+      <a href="" class="btn btn-tab col-lg-2 active">Home</a>
+      <a href=""  class="btn btn-tab col-lg-2">Leaderboards</a>
+      <a href=""  class="btn btn-tab col-lg-2">Individual Stats</a>
+      <a href=""  class="btn btn-tab col-lg-2">About</a>
+
+    </div>
+
+  <hr>
+
+  <center><h1>EAST DORM MEETING ANALYSIS TOOL</h1>
+
+  <br><br>
+  <div class="row" style="width: 70%">
+    {% for item in buttons %}
+    <a href="/?meeting={{item[0]}}" class="btn btn-tab {% if (item[0] == meeting) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</a>
+    {% endfor %}
+  </div>
+
+  <canvas id="chart" width="100%" height="40"></canvas>
+  </center>
+
+<script>
+   // bar chart data
+   var barData = {
+   labels : [{% for item in names %}
+                  "{{item}}",
+              {% endfor %}],
+   datasets : [
+      {
+        backgroundColor: "rgba(0,150,0,0.9)",
+        label: "Real Comments",
+        data : [{% for item in real %}
+                      {{item}},
+                    {% endfor %}]
+      },
+      {
+        backgroundColor: "rgba(150,0,0,0.9)",
+        label: "Meme Comments",
+        data : [{% for item in meme %}
+                      -{{item}},
+                    {% endfor %}]
+      }
+      ]
+   }
+ 
+ var options = {
+          responsive: true,
+          scales: {
+            xAxes: [{
+              stacked: true,
+              ticks: {
+                autoSkip: false
+            }
+            }],
+            yAxes: [{
+              stacked: true
+            }]
+          }
+};
+
+var ctx = document.getElementById("chart").getContext("2d");
+myBar = new Chart(ctx, {
+        type: 'bar',
+        data: barData,
+        options: options
+      });
+ 
+</script>
+
+    <div class="copyright py-4 text-center white-text">
+      <div class="container">
+        <small>Copyright &copy; Jonah Rubin 2018</small>
+      </div>
+    </div>
+
+    <!-- Scroll to Top Button (Only visible on small and extra-small screen sizes) -->
+    <div class="scroll-to-top d-lg-none position-fixed ">
+      <a class="js-scroll-trigger d-block text-center text-white rounded" href="#page-top">
+        <i class="fa fa-chevron-up"></i>
+      </a>
+    </div>
+  </body>
+
+{%- endblock %}
+

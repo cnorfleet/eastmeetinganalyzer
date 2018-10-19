@@ -1,0 +1,25 @@
+.white-text{
+  color: white;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.tabs{
+  margin-top: 10px;
+
+}
+.btn-tab{
+  color: #f44242;
+  border-color: #f44242;
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+.btn-tab:hover{
+  background-color: #f98181;
+  color: white;
+}
+
+a.active {
+  background-color: #f44242;
+  color: white;
+}
