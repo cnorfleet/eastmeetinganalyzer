@@ -38,9 +38,9 @@
 <center>
     <div class="row tabs">
       <div style="width:70%"></div>
-      <a href="/" style="width:17.5%" class="btn btn-tab active">Home</a>
+      <a href="/" style="width:17.5%" class="btn btn-tab">Home</a>
       <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab">Leaderboards</a>
-      <a href="/individual" style="width:17.5%" class="btn btn-tab">Individual Stats</a>
+      <a href="/individual" style="width:17.5%" class="btn btn-tab active">Individual Stats</a>
       <a href="" style="width:17.5%" class="btn btn-tab">About</a>
 
     </div>
@@ -51,40 +51,21 @@
   <center><h1>EAST DORM MEETING ANALYSIS TOOL</h1>
 
   <br><br>
-  <div class="row" style="width: 70%">
-    {% for item in buttons %}
-    <div id="meeting-{{item[0]}}" onclick="loadData({{item[0]}})" class="btn btn-tab {% if (item[0] == 0) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</div>
-    {% endfor %}
+  <div class="form-group">
+    <label for="SearchBar">Search for Name:</label>
+    <input oninput="search()" type="text" class="form-control" style="width:500px" id="SearchBar" placeholder="John Smith">
+  </div>
+  <div id="results" style="width: 70%">
+
   </div>
 
   <canvas id="chart" width="2000" height="800"></canvas>
   </center>
 
 <script>
-   // bar chart data
-   var barData = {
-   labels : [{% for item in data['names'] %}
-                  "{{item}}",
-              {% endfor %}],
-   datasets : [
-      {
-        backgroundColor: "rgba(0,150,0,0.9)",
-        label: "Real Comments",
-        data : [{% for item in data['real'] %}
-                      {{item}},
-                    {% endfor %}]
-      },
-      {
-        backgroundColor: "rgba(150,0,0,0.9)",
-        label: "Meme Comments",
-        data : [{% for item in data['meme'] %}
-                      {{item}},
-                    {% endfor %}]
-      }
-      ]
-   }
- 
- var options = {
+var setup = false;
+function setUpChart(){  
+  var options = {
           responsive: true,
           scales: {
             xAxes: [{
@@ -98,6 +79,21 @@
             }]
           }
 };
+var barData = {
+   labels : [],
+   datasets : [
+      {
+        backgroundColor: "rgba(0,150,0,0.9)",
+        label: "Real Comments",
+        data : []
+      },
+      {
+        backgroundColor: "rgba(150,0,0,0.9)",
+        label: "Meme Comments",
+        data : []
+      }
+      ]
+   }
 
 var ctx = document.getElementById("chart").getContext("2d");
 myBar = new Chart(ctx, {
@@ -105,23 +101,44 @@ myBar = new Chart(ctx, {
         data: barData,
         options: options
       });
+}
+names = [{% for name in names %} '{{name}}', {% endfor %}];
 
-currentMeeting = 0
-
-function loadData(meeting){
-  $.get("/all?meeting="+meeting, function(data, status){
+function search(){
+  var term = document.getElementById("SearchBar").value.toLowerCase();
+  results = names.filter(name => name.toLowerCase().search(term) != -1);
+  resultString = ""
+  if (results.length == 0){
+    resultString = "No results found. Try a different name.";
+  }
+  for (i = 0; i < 5 && i < results.length; i++) {
+    id = names.indexOf(results[i]);
+    resultString = resultString + "<span id='name-"+id+"' class='btn btn-tab' style='width: 14%' onclick='loadData("+id+")'>"+results[i]+"</span>";
+  }
+  $("#results").html(resultString);
+}
+var currentPerson = -1;
+function loadData(person){
+  $.get("/person?person="+person, function(data, status){
       if (status == "success") {
-      myBar.data.labels = data['names'];
+      if (!setup) {
+        setUpChart();
+        setup = true;
+      }
+      myBar.data.labels = data['meetings'];
       myBar.data.datasets[0].data = data['real'];
       myBar.data.datasets[1].data = data['meme'];
       myBar.update();
-      $("#meeting-"+currentMeeting).removeClass("active");
-      currentMeeting = meeting;
-      $("#meeting-"+currentMeeting).addClass("active");
+      if ($("#name-"+currentPerson).length != 0){
+        $("#name-"+currentPerson).removeClass("active");
+      }
+      currentPerson = person;
+      if ($("#name-"+currentPerson).length != 0){
+        $("#name-"+currentPerson).addClass("active");
+      }
     }
   });
 }
-
 </script>
 
     <div class="copyright py-4 text-center white-text">

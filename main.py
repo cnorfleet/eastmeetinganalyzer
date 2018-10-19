@@ -33,6 +33,34 @@ def main_page():
 	json = get_main_data(data, 0)
 	return render_template('main.html', data=json, buttons=buttons, numButtons=numMeetings+1)
 
+@app.route('/individual')
+def individual_page():
+	data = load_data()
+	names = []
+	for row in data[1:]:
+		names += [row[0]]
+	return render_template('individual.html', names=names)
+
+@app.route('/person')
+def get_person_data():
+	if ('person' in request.args):
+		person = int(request.args['person'])
+		data = load_data()
+		row = data[person+1]
+		real = []
+		meme = []
+		for i in range(1, len(row)):
+			if i%2 == 0:
+				meme += [-1*int(row[i]) if row[i] != '' else 0]
+			else:
+				real += [int(row[i]) if row[i] != '' else 0] 
+		meetings = ["Meeting "+str(i+1) for i in range(len(meme))]
+		json = {}
+		json['meetings'] = meetings
+		json['real'] = real
+		json['meme'] = meme
+		return jsonify(json)
+
 @app.route('/all')
 def reload_main_data():
 	meeting = 0
