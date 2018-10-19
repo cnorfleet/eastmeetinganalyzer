@@ -20,7 +20,7 @@
     <meta name="author" content="">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.3.0/Chart.min.js"></script>
 
-    <title>East Dorm Meeting Analysis Tool - Leaderboard</title>
+    <title>East Dorm Meeting Analysis Tool</title>
 
   </head>
 
@@ -35,13 +35,13 @@
       </div>
     </nav>
 
-   <center>
+<center>
     <div class="row tabs">
       <div style="width:70%"></div>
       <a href="/" style="width:17.5%" class="btn btn-tab">Home</a>
-      <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab active">Leaderboards</a>
+      <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab">Leaderboards</a>
       <a href="/individual" style="width:17.5%" class="btn btn-tab">Individual Stats</a>
-      <a href="/about" style="width:17.5%" class="btn btn-tab">About</a>
+      <a href="/about" style="width:17.5%" class="btn btn-tab active">About</a>
 
     </div>
   </center>
@@ -51,27 +51,7 @@
   <center><h1>EAST DORM MEETING ANALYSIS TOOL</h1>
 
   <br><br>
-  <div class="row" style="width: 70%">
-    {% for item in methods %}
-    <a href="/leaderboard?method={{item[0]}}" class="btn btn-tab {% if (item[0] == method) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</a>
-    {% endfor %}
-  </div>
-  <h2>{{methods[method][1]}}</h2>
-      <h4>{{methods[method][2]}}</h4>
-
-
-<div class="row">
-<table class="table" style="width: 70%">
-  <tr><th>Rank</th><th>Name</th><th>Score</th><th>Real Comments</th><th>Meme Comments</th></tr>
-  {% for item in table %}
-  <tr><td>{{item[0]}}</td><td>{{item[1]}}</td><td>{{item[2]}}</td><td>{{item[3]}}</td><td>{{item[4]}}</td></tr>
-  {% endfor %}
-</table>
-</div>
-
-  </center>
-
-
+  <p>This system is designed to collate useless dorm meeting data. If you've found a technical issue, contact Jonah Rubin. If you've found a problem with the data, contact EDC.</p>
 
     <div class="copyright py-4 text-center white-text">
       <div class="container">

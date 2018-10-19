@@ -137,4 +137,6 @@ def leaderboard_page():
 		table[i][0] = i+1
 	return render_template('leaderboard.html', table=table, methods=methods, numButtons=len(methods), method=method)
 
-
+@app.route('/about')
+def about_page():
+	return render_template('about.html')
