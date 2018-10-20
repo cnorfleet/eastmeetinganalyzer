@@ -10,7 +10,7 @@
 .btn-tab{
   color: #f44242;
   border-color: #f44242;
-  width: 100%;
+  width: -webkit-fill-available;
   margin-bottom: 10px;
 }
 
