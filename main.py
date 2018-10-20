@@ -4,6 +4,7 @@ import csv
 from flask import request
 from flask import jsonify
 import math
+import os
 
 from flask_bootstrap import Bootstrap
 
@@ -16,8 +17,9 @@ def create_app():
 app = create_app()
 
 def load_data():
+	filename = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data.csv')
 	data = []
-	with open('data.csv', 'r') as csvfile:
+	with open(filename, 'r') as csvfile:
 		reader = csv.reader(csvfile, delimiter=',', quotechar='|')
 		for row in reader:
 			data += [row]
