@@ -17,7 +17,7 @@ app = create_app()
 
 def load_data():
 	data = []
-	with open('data.csv', 'rb') as csvfile:
+	with open('data.csv', 'r') as csvfile:
 		reader = csv.reader(csvfile, delimiter=',', quotechar='|')
 		for row in reader:
 			data += [row]
@@ -26,7 +26,7 @@ def load_data():
 @app.route('/')
 def main_page():
 	data = load_data()
-	numMeetings = (len(data[0])-1)/2
+	numMeetings = math.floor((len(data[0])-1)/2)
 	buttons = [[0, "All Meetings"]]
 	for i in range(numMeetings):
 		buttons += [[i+1, "Meeting "+str(i+1)]]
@@ -132,7 +132,7 @@ def leaderboard_page():
 	table = []
 	for i in range(len(names)):
 		table += [[i+1, names[i], methods[method][3](real[i], meme[i]), real[i], meme[i]]]
-	table.sort(key = lambda(x): x[2], reverse=True)
+	table.sort(key = lambda x: x[2], reverse=True)
 	for i in range(len(names)):
 		table[i][0] = i+1
 	return render_template('leaderboard.html', table=table, methods=methods, numButtons=len(methods), method=method)
