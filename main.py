@@ -26,7 +26,7 @@ def load_data():
 @app.route('/')
 def main_page():
 	data = load_data()
-	numMeetings = math.floor((len(data[0])-1)/2)
+	numMeetings = int((len(data[0])-1)/2)
 	buttons = [[0, "All Meetings"]]
 	for i in range(numMeetings):
 		buttons += [[i+1, "Meeting "+str(i+1)]]
