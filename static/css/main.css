@@ -10,8 +10,8 @@
 .btn-tab{
   color: #f44242;
   border-color: #f44242;
-  width: -webkit-fill-available;
-  margin-bottom: 10px;
+  width: 100% !important;
+  margin-bottom: 10px !important;
 }
 
 .btn-tab:hover{
