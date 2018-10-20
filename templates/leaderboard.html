@@ -44,16 +44,16 @@
       </div>
     </nav>
 
-   <center>
-    <div class="row tabs">
-      <div style="width:70%"></div>
-      <a href="/" style="width:17.5%" class="btn btn-tab">Home</a>
-      <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab active">Leaderboards</a>
-      <a href="/individual" style="width:17.5%" class="btn btn-tab">Individual Stats</a>
-      <a href="/about" style="width:17.5%" class="btn btn-tab">About</a>
+   <div class="container">
+      <div class="row tabs">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/" class="btn btn-tab">Home</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/leaderboard" class="btn btn-tab active">Leaderboards</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/individual"class="btn btn-tab">Individual Stats</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/about" class="btn btn-tab">About</a></div>
 
+      </div>
     </div>
-  </center>
 
   <hr>
 
@@ -62,7 +62,7 @@
   <br><br>
   <div class="row" style="width: 70%">
     {% for item in methods %}
-    <a href="/leaderboard?method={{item[0]}}" class="btn btn-tab {% if (item[0] == method) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</a>
+    <div class="col-lg-2 col-md-4 col-sm-6"><a href="/leaderboard?method={{item[0]}}" class="btn btn-tab {% if (item[0] == method) %}active{% endif %}">{{item[1]}}</a></div>
     {% endfor %}
   </div>
   <h2>{{methods[method][1]}}</h2>

@@ -43,38 +43,46 @@
       </div>
     </nav>
 
-<center>
-    <div class="row tabs">
-      <div style="width:70%"></div>
-      <a href="/" style="width:17.5%" class="btn btn-tab">Home</a>
-      <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab">Leaderboards</a>
-      <a href="/individual" style="width:17.5%" class="btn btn-tab active">Individual Stats</a>
-      <a href="/about" style="width:17.5%" class="btn btn-tab">About</a>
+    <div class="container">
+      <div class="row tabs">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/" class="btn btn-tab">Home</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/leaderboard" class="btn btn-tab">Leaderboards</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/individual"class="btn btn-tab active">Individual Stats</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/about" class="btn btn-tab">About</a></div>
 
+      </div>
     </div>
-  </center>
 
   <hr>
 
   <center><h1>EAST DATA CONSOLE - INDIVIDUAL STATS</h1>
 
   <br><br>
-  <div class="form-group">
-    <label for="SearchBar">Search for Name:</label>
-    <input oninput="search()" type="text" class="form-control" style="width:500px" id="SearchBar" placeholder="Harry F">
+    <div class="container">
+
+  <div class="form-group row">
+    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12"><label for="SearchBar">Search for Name:</label></div>
+    <div class="col-lg-3 col-md-2 col-sm-1 col-xs-0"></div>
+    <div class="col-lg-6 col-md-8 col-sm-10 col-xs-12">
+    <input oninput="search()" type="text" class="form-control" id="SearchBar" placeholder="Harry F">
   </div>
-  <div id="results" style="width: 70%">
+  </div>
+  <div id="results" class="row justify-content-lg-center">
 
   </div>
+</div>
 
-  <canvas id="chart" width="2000" height="800"></canvas>
+  <div style="height:800px; overflow:auto;">
+  <canvas id="chart" width="{{nummeetings*200}}" height="650"></canvas>
+</div>
   </center>
 
 <script>
 var setup = false;
 function setUpChart(){  
   var options = {
-          responsive: true,
+          responsive: false,
           scales: {
             xAxes: [{
               stacked: true,
@@ -115,13 +123,13 @@ names = [{% for name in names %} '{{name}}', {% endfor %}];
 function search(){
   var term = document.getElementById("SearchBar").value.toLowerCase();
   results = names.filter(name => name.toLowerCase().search(term) != -1);
-  resultString = ""
+  resultString = "";
   if (results.length == 0){
     resultString = "No results found. Try a different name.";
   }
-  for (i = 0; i < 5 && i < results.length; i++) {
+  for (i = 0; i < 6 && i < results.length; i++) {
     id = names.indexOf(results[i]);
-    resultString = resultString + "<span id='name-"+id+"' class='btn btn-tab' style='width: 14%' onclick='loadData("+id+")'>"+results[i]+"</span>";
+    resultString = resultString + "<div class='col-lg-2 col-md-4 col-sm-6'><a id='name-"+id+"' class='btn btn-tab' onclick='loadData("+id+")'>"+results[i]+"</a></div>";
   }
   $("#results").html(resultString);
 }

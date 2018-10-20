@@ -33,7 +33,7 @@ def main_page():
 	for i in range(numMeetings):
 		buttons += [[i+1, "Meeting "+str(i+1)]]
 	json = get_main_data(data, 0)
-	return render_template('main.html', data=json, buttons=buttons, numButtons=numMeetings+1)
+	return render_template('main.html', data=json, buttons=buttons, numButtons=numMeetings+1, numpeople=len(json['names']))
 
 @app.route('/individual')
 def individual_page():
@@ -41,7 +41,7 @@ def individual_page():
 	names = []
 	for row in data[1:]:
 		names += [row[0]]
-	return render_template('individual.html', names=names)
+	return render_template('individual.html', names=names, nummeetings=(len(data[0])-1)/2)
 
 @app.route('/person')
 def get_person_data():
@@ -109,7 +109,7 @@ methods = [
 	(2, "Meme Comments", "The total number of meme comments made", lambda x, y: y),
 	(3, "Most Productive", "The productivity, weighted by total comments", lambda x, y: (x-y)*abs(x-y)/(x+y+1)),
 	(4, "Most Memey", "The memeosity, weighted by total comments", lambda x, y: (y-x)*abs(x-y)/(x+y+1)),
-	(5, "Most Balanced", "How perfectly balanced, as all things should be", lambda x, y: (x+y)*binom(x, y, 0.5)),
+	(5, "Most Balanced", "How perfectly balanced, as all things should be", lambda x, y: int(math.log((x+y)*binom(x, y, 0.5))*100)),
 ]
 
 @app.route('/leaderboard')

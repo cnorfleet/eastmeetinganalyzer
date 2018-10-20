@@ -44,16 +44,16 @@
       </div>
     </nav>
 
-<center>
-    <div class="row tabs">
-      <div style="width:70%"></div>
-      <a href="/" style="width:17.5%" class="btn btn-tab active">Home</a>
-      <a href="/leaderboard"  style="width:17.5%" class="btn btn-tab">Leaderboards</a>
-      <a href="/individual" style="width:17.5%" class="btn btn-tab">Individual Stats</a>
-      <a href="/about" style="width:17.5%" class="btn btn-tab">About</a>
+ <div class="container">
+      <div class="row tabs">
+        <div class="col-lg-2"></div>
+        <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/" class="btn btn-tab active">Home</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/leaderboard" class="btn btn-tab">Leaderboards</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/individual"class="btn btn-tab">Individual Stats</a></div>
+         <div class="col-lg-2 col-md-6 col-sm-6 col-xs-6"><a href="/about" class="btn btn-tab">About</a></div>
 
+      </div>
     </div>
-  </center>
 
   <hr>
 
@@ -62,11 +62,13 @@
   <br><br>
   <div class="row" style="width: 70%">
     {% for item in buttons %}
-    <div id="meeting-{{item[0]}}" onclick="loadData({{item[0]}})" class="btn btn-tab {% if (item[0] == 0) %}active{% endif %}" style="width: {{70/numButtons}}%">{{item[1]}}</div>
+    <div class="col-lg-4 col-md-6"><a id="meeting-{{item[0]}}" onclick="loadData({{item[0]}})" class="btn btn-tab {% if (item[0] == 0) %}active{% endif %}">{{item[1]}}</a></div>
     {% endfor %}
   </div>
-
-  <canvas id="chart" width="2000" height="800"></canvas>
+  <p>scroll to see full chart</p>
+  <div style="height:800px; overflow:auto;">
+  <canvas id="chart" width="{{numpeople*70}}" height="650"></canvas>
+</div>
   </center>
 
 <script>
@@ -94,7 +96,7 @@
    }
  
  var options = {
-          responsive: true,
+          responsive: false,
           scales: {
             xAxes: [{
               stacked: true,
