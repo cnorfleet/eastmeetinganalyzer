@@ -71,6 +71,12 @@
   <div id="results" class="row justify-content-lg-center">
 
   </div>
+  <hr><p>Select a Metric:</p>
+  <div class="row" style="width: 90%">
+    {% for item in methods %}
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6"><a onclick="selectMetric({{item[0]}})" id="metric-{{item[0]}}" class="btn btn-tab {% if (item[0] == 0) %}active{% endif %}">{{item[1]}}</a></div>
+    {% endfor %}
+  </div>
 </div>
 
   <div style="height:800px; overflow:auto;">
@@ -84,14 +90,20 @@ function setUpChart(){
   var options = {
           responsive: false,
           scales: {
-            xAxes: [{
-              stacked: true,
-              ticks: {
-                autoSkip: false
-            }
-            }],
+            xAxes: [{}],
             yAxes: [{
-              stacked: true
+              id: 'score',
+              type: 'linear',
+              position: 'left',
+            }, {
+              id: 'rank',
+              type: 'linear',
+              position: 'right',
+              ticks: {
+                max: {{numPeople}},
+                min: 1,
+                reverse: true
+              }
             }]
           }
 };
@@ -99,20 +111,25 @@ var barData = {
    labels : [],
    datasets : [
       {
-        backgroundColor: "rgba(0,150,0,0.9)",
-        label: "Real Comments",
-        data : []
+        label: "Score",
+        yAxisID: "score",
+        data : [],
+        backgroundColor: "rgba(0,0,0,0.5)",
+        borderColor: "rgba(1,1,1,1)",
       },
       {
-        backgroundColor: "rgba(150,0,0,0.9)",
-        label: "Meme Comments",
-        data : []
+        label: "Rank",
+        yAxisID: "rank",
+        data : [],
+        backgroundColor: "rgba(0,0,1,0)",
+        borderColor: "rgba(0,0,255,1)",
+        type: 'line'
       }
       ]
    }
 
 var ctx = document.getElementById("chart").getContext("2d");
-myBar = new Chart(ctx, {
+chart = new Chart(ctx, {
         type: 'bar',
         data: barData,
         options: options
@@ -133,18 +150,35 @@ function search(){
   }
   $("#results").html(resultString);
 }
+
+var currentMetric = 0;
+
+function selectMetric(metric){
+  $("#metric-"+currentMetric).removeClass("active");
+  if (currentMetric != metric && currentPerson >= 0){
+      currentMetric = metric;
+      loadData(currentPerson);
+  } else {
+      currentMetric = metric;
+  }
+  $("#metric-"+currentMetric).addClass("active");
+}
+
 var currentPerson = -1;
 function loadData(person){
-  $.get("/person?person="+person, function(data, status){
+  $.get("/person?person="+person+"&metric="+currentMetric, function(data, status){
       if (status == "success") {
       if (!setup) {
         setUpChart();
         setup = true;
       }
-      myBar.data.labels = data['meetings'];
-      myBar.data.datasets[0].data = data['real'];
-      myBar.data.datasets[1].data = data['meme'];
-      myBar.update();
+      chart.data.labels = data['meetings'];
+      chart.data.datasets[0].data = data['values'];
+      chart.data.datasets[1].data = data['ranks'];
+      chart.options.scales.yAxes[0].ticks.min = data['min'];
+      chart.options.scales.yAxes[0].ticks.max = data['max'];
+      chart.update();
+      console.log(data);
       if ($("#name-"+currentPerson).length != 0){
         $("#name-"+currentPerson).removeClass("active");
       }

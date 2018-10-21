@@ -21,8 +21,9 @@ def load_data():
 	data = []
 	with open(filename, 'r') as csvfile:
 		reader = csv.reader(csvfile, delimiter=',', quotechar='|')
+		next(reader, None) # skip header
 		for row in reader:
-			data += [row]
+			data += [[row[0]]+[int(x) if x != "" else 0 for x in row[1:]]]
 	return data
 
 @app.route('/')
@@ -39,29 +40,23 @@ def main_page():
 def individual_page():
 	data = load_data()
 	names = []
-	for row in data[1:]:
+	for row in data:
 		names += [row[0]]
-	return render_template('individual.html', names=names, nummeetings=(len(data[0])-1)/2)
+	return render_template('individual.html', names=names, nummeetings=(len(data[0])-1)/2, numPeople=len(names), methods=methods)
 
 @app.route('/person')
 def get_person_data():
 	if ('person' in request.args):
 		person = int(request.args['person'])
-		data = load_data()
-		row = data[person+1]
-		real = []
-		meme = []
-		for i in range(1, len(row)):
-			if i%2 == 0:
-				meme += [-1*int(row[i]) if row[i] != '' else 0]
-			else:
-				real += [int(row[i]) if row[i] != '' else 0] 
-		meetings = ["Meeting "+str(i+1) for i in range(len(meme))]
-		json = {}
-		json['meetings'] = meetings
-		json['real'] = real
-		json['meme'] = meme
-		return jsonify(json)
+		if ('metric' in request.args):
+			metric = int(request.args['metric'])
+			data = load_data()
+			json = {}
+			json['values'], json['ranks'] = getValuesAndRanks(data, person, metric)
+			json['meetings'] = ["Meeting "+str(i+1) for i in range(len(json['values']))]
+			json['min'] = methods[metric][4]
+			json['max'] = methods[metric][5]
+			return jsonify(json)
 
 @app.route('/all')
 def reload_main_data():
@@ -76,7 +71,7 @@ def get_main_data(data, meeting=0):
 	real = []
 	meme = []
 	numMeetings = 0
-	for row in data[1:]:
+	for row in data:
 		names += [row[0]]
 		if ((len(row)-1)/2 > numMeetings):
 			numMeetings = (len(row)-1)/2
@@ -102,16 +97,20 @@ def binom(x, y, p):
 	score *= math.pow(p, x)
 	score *= math.pow(p, y)
 	return score
+def balance(x, y):
+	if x+y <= 0: return 0
+	raw = int(math.log((x+y)*binom(x, y, 0.5))*100)
+	return math.copysign(math.log(abs(raw)), raw)
 
 methods = [
-	(0, "Total Comments", "The total number of comments made", lambda x, y: x+y),
-	(1, "Real Comments", "The total number of real comments made", lambda x, y: x),
-	(2, "Meme Comments", "The total number of meme comments made", lambda x, y: y),
-	(3, "Productivity", "The productivity, weighted by total comments", lambda x, y: (x-y)*abs(x-y)/(x+y+1)),
-	(4, "Meme-ness", "The memeosity, weighted by total comments", lambda x, y: (y-x)*abs(x-y)/(x+y+1)),
-	(5, "Balance", "How perfectly balanced, as all things should be", lambda x, y: int(math.log((x+y)*binom(x, y, 0.5))*100)),
-	(6, "Productive Purity", "Percentage of comments which are productive", lambda x, y: int(x/(x+y+1e-100)*100)),
-	(7, "Mematic Purity", "Percentage of comments which are memes", lambda x, y: int(y/(x+y+1e-100)*100)),
+	(0, "Total Comments", "The total number of comments made", lambda x, y: x+y, 0, 150),
+	(1, "Real Comments", "The total number of real comments made", lambda x, y: x, 0, 100),
+	(2, "Meme Comments", "The total number of meme comments made", lambda x, y: y, 0, 100),
+	(3, "Productivity", "The productivity, weighted by total comments", lambda x, y: (x-y)*abs(x-y)/(x+y+1), -100, 100),
+	(4, "Meme-ness", "The memeosity, weighted by total comments", lambda x, y: (y-x)*abs(x-y)/(x+y+1), -100, 100),
+	(5, "Balance", "How perfectly balanced, as all things should be", balance, -10, 10),
+	(6, "Productive Purity", "Percentage of comments which are productive", lambda x, y: int(x/(x+y+1e-100)*100), 0, 100),
+	(7, "Mematic Purity", "Percentage of comments which are memes", lambda x, y: int(y/(x+y+1e-100)*100), 0, 100),
 
 ]
 
@@ -125,7 +124,7 @@ def leaderboard_page():
 	real = []
 	meme = []
 	numMeetings = 0
-	for row in data[1:]:
+	for row in data:
 		names += [row[0]]
 		meme += [0]
 		real += [0]
@@ -145,3 +144,26 @@ def leaderboard_page():
 @app.route('/about')
 def about_page():
 	return render_template('about.html')
+
+
+def generateMetricTable(data, metric):
+	table = []
+	for person in data:
+		row = [person[0]]
+		for week in range(int((len(person)-1)/2)):
+			row += [methods[metric][3](person[2*week+1], person[2*week+2])]
+		table += [row]
+	return table
+
+
+def getValuesAndRanks(data, person, metric):
+	name = data[person][0]
+	data = sorted(data, key= lambda x: sum(x[1:]))
+	metricTable = generateMetricTable(data, metric)
+	values = next(x for x in metricTable if x[0] == name)[1:]
+	ranks = []
+	for week in range(1, len(metricTable[0])):
+		table = sorted(metricTable, key = lambda x: x[week], reverse=True)
+		ranks += [next(i for i in range(len(table)) if table[i][0] == name)+1]
+	return values, ranks
+

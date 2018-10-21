@@ -27,3 +27,7 @@
 h1 {
   font-family: Arial !important;
 }
+
+#results {
+  height: 46px;
+}
