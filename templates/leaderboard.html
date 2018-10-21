@@ -60,9 +60,9 @@
   <center><h1>EAST DATA CONSOLE - LEADERBOARDS</h1>
 
   <br><br>
-  <div class="row" style="width: 70%">
+  <div class="row" style="width: 90%">
     {% for item in methods %}
-    <div class="col-lg-2 col-md-4 col-sm-6"><a href="/leaderboard?method={{item[0]}}" class="btn btn-tab {% if (item[0] == method) %}active{% endif %}">{{item[1]}}</a></div>
+    <div class="col-lg-3 col-md-4 col-sm-6 col-xs-6"><a href="/leaderboard?method={{item[0]}}" class="btn btn-tab {% if (item[0] == method) %}active{% endif %}">{{item[1]}}</a></div>
     {% endfor %}
   </div>
   <h2>{{methods[method][1]}}</h2>

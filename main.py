@@ -104,12 +104,15 @@ def binom(x, y, p):
 	return score
 
 methods = [
-	(0, "Most Comments", "The total number of comments made", lambda x, y: x+y),
+	(0, "Total Comments", "The total number of comments made", lambda x, y: x+y),
 	(1, "Real Comments", "The total number of real comments made", lambda x, y: x),
 	(2, "Meme Comments", "The total number of meme comments made", lambda x, y: y),
-	(3, "Most Productive", "The productivity, weighted by total comments", lambda x, y: (x-y)*abs(x-y)/(x+y+1)),
-	(4, "Most Memey", "The memeosity, weighted by total comments", lambda x, y: (y-x)*abs(x-y)/(x+y+1)),
-	(5, "Most Balanced", "How perfectly balanced, as all things should be", lambda x, y: int(math.log((x+y)*binom(x, y, 0.5))*100)),
+	(3, "Productivity", "The productivity, weighted by total comments", lambda x, y: (x-y)*abs(x-y)/(x+y+1)),
+	(4, "Meme-ness", "The memeosity, weighted by total comments", lambda x, y: (y-x)*abs(x-y)/(x+y+1)),
+	(5, "Balance", "How perfectly balanced, as all things should be", lambda x, y: int(math.log((x+y)*binom(x, y, 0.5))*100)),
+	(6, "Productive Purity", "Percentage of comments which are productive", lambda x, y: int(x/(x+y+1e-100)*100)),
+	(7, "Mematic Purity", "Percentage of comments which are memes", lambda x, y: int(y/(x+y+1e-100)*100)),
+
 ]
 
 @app.route('/leaderboard')
@@ -134,7 +137,7 @@ def leaderboard_page():
 	table = []
 	for i in range(len(names)):
 		table += [[i+1, names[i], methods[method][3](real[i], meme[i]), real[i], meme[i]]]
-	table.sort(key = lambda x: x[2], reverse=True)
+	table.sort(key = lambda x: (x[2], x[3]+x[4]), reverse=True)
 	for i in range(len(names)):
 		table[i][0] = i+1
 	return render_template('leaderboard.html', table=table, methods=methods, numButtons=len(methods), method=method)
