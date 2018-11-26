@@ -100,7 +100,7 @@ def binom(x, y, p):
 def balance(x, y):
 	if x+y <= 0: return 0
 	raw = int(math.log((x+y)*binom(x, y, 0.5))*100)
-	return math.copysign(math.log(abs(raw)), raw)
+	return math.copysign(math.log(abs(raw)), raw) if raw != 0 else 0
 
 methods = [
 	(0, "Total Comments", "The total number of comments made", lambda x, y: x+y, 0, 150),
@@ -151,7 +151,10 @@ def generateMetricTable(data, metric):
 	for person in data:
 		row = [person[0]]
 		for week in range(int((len(person)-1)/2)):
-			row += [methods[metric][3](person[2*week+1], person[2*week+2])]
+			score = 0
+			if (person[2*week+1] + person[2*week+2] > 0):
+				score = methods[metric][3](person[2*week+1], person[2*week+2])
+			row += [score]
 		table += [row]
 	return table
 
