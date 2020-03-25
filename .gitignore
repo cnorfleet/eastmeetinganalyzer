@@ -1,6 +1,10 @@
+# exclude auto-generated files
 .DS_Store
 bin/
 lib/
 pip-selfcheck.json
 __pycache__/
 *.pyc
+
+# exclude virtual environment files
+venv/
